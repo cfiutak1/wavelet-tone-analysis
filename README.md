@@ -16,4 +16,5 @@ Running `main.py` will perform the following:
 5. Computes the difference between the two spectrums.
 6. Saves a .png representation of the difference between the two spectrums.
 
-The .png can be used to identify frequency ranges that need to be adjusted to match the tone of the desired track.
+The .png can be used to identify frequency ranges that need to be adjusted to match the tone of the desired track. Here is an example of what one could look like:
+![Example of difference between two F#2 notes played on a bass guitar](img/example_diff.png)
