@@ -4,8 +4,8 @@ import time
 import audio_processing
 import wavelet
 
-challenger_sample_rate, challenger_sound = audio_processing.load_wav("sound/F#2 (Processed) v5.wav")
-original_sample_rate, original_sound = audio_processing.load_wav("sound/F#2 (Studio).wav")
+challenger_sample_rate, challenger_sound = audio_processing.load_wav("sound/F#2 (Challenger).wav")
+original_sample_rate, original_sound = audio_processing.load_wav("sound/F#2 (Original).wav")
 
 if original_sample_rate != challenger_sample_rate:
     raise ValueError(f"The sample rates of the files must match ({original_sample_rate=}, {challenger_sample_rate=}")
