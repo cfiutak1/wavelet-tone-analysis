@@ -59,13 +59,17 @@ def _register_balanced_frequency_scale():
 
 
 def plot_wavelet_power_spectrum(wavelet_power: np.array, sample_rate: int or float, start_frequency: int, end_frequency: int) -> None:
+    print(f"{wavelet_power.mean()=}")
+    print(f"{wavelet_power.std()=}")
+    print(f"{wavelet_power.max()=}")
+    print(f"{wavelet_power.min()=}")
     plt.figure(figsize=(24, 13.5), dpi=300)
     plt.imshow(
         wavelet_power,
         aspect="auto",
         extent=[0, wavelet_power.shape[1], end_frequency, start_frequency],
         cmap="seismic",
-        norm=SymLogNorm(2)
+        norm=SymLogNorm(1, vmin=-10, vmax=10)
     )
 
     # Invert the y-axis so that low frequencies appear at the bottom.

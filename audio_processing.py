@@ -51,7 +51,38 @@ def normalize_volumes(sound1: np.array, sound2: np.array, sample_rate: float) ->
     return sound1, sound2
 
 
-def align_sound_data_by_peaks(sound1: np.array, sound2: np.array) -> (np.array, np.array):
+def align_signals_with_weighted_correlation(sound1, sound2, growth_factor=1.005, sigma=2):
+    # Smooth signals using Gaussian filter
+    smoothed_sound1 = scipy.ndimage.gaussian_filter1d(sound1, sigma=sigma)
+    smoothed_sound2 = scipy.ndimage.gaussian_filter1d(sound2, sigma=sigma)
+
+    # Generate increasing weights
+    weights = np.power(growth_factor, np.arange(len(smoothed_sound1)))
+
+    # Apply weights to smoothed signals and cross-correlate
+    weighted_sound1 = smoothed_sound1 * weights
+    weighted_sound2 = smoothed_sound2 * weights
+
+    correlation = scipy.signal.correlate(weighted_sound1, weighted_sound2, mode="full")
+    shift_index = np.argmax(correlation) - len(weighted_sound2) + 1  # Calculate shift for alignment
+
+    # Shift delayed signal by adding padding
+    if shift_index > 0:
+        print(f"padding sound2 with {shift_index / 44100} sec")
+        sound2 = np.pad(sound2, (shift_index, 0), "constant")
+    elif shift_index < 0:
+        print(f"padding sound1 with {shift_index / 44100} sec")
+        sound1 = np.pad(sound1, (-shift_index, 0), "constant")
+
+    # Trim both signals to the same length
+    max_sound_length = min(len(sound1), len(sound2))
+    sound1 = sound1[:max_sound_length]
+    sound2 = sound2[:max_sound_length]
+
+    return sound1, sound2
+
+
+def align_sound_data_by_max_peak_and_oscillations(sound1: np.array, sound2: np.array) -> (np.array, np.array):
     """
     Just using the start of the signal usually won't fully align the signals, because the length of the string attack
     can vary based on many factors:
@@ -102,7 +133,7 @@ def align_sound_data_by_peaks(sound1: np.array, sound2: np.array) -> (np.array, 
     elif len(sound2) > len(sound1):
         sound2 = sound2[:max_sound_length]
 
-    return sound1, sound2
+    return align_signals_with_weighted_correlation(sound1, sound2)
 
 
 def prepare_sounds_for_comparison(sound1: np.array, sound2: np.array, sample_rate: float) -> (np.array, np.array):
@@ -119,6 +150,6 @@ def prepare_sounds_for_comparison(sound1: np.array, sound2: np.array, sample_rat
         are ready to be compared.
     """
     sound1, sound2 = normalize_volumes(sound1, sound2, sample_rate)
-    sound1, sound2 = align_sound_data_by_peaks(sound1, sound2)
+    sound1, sound2 = align_sound_data_by_max_peak_and_oscillations(sound1, sound2)
 
     return sound1, sound2
