@@ -1,7 +1,7 @@
 import audio_processing
 
 
-challenger_sample_rate, challenger_sound = audio_processing.load_wav("sound/F#2 (Processed) v54.wav")
+challenger_sample_rate, challenger_sound = audio_processing.load_wav("sound/F#2 (Processed) v77.wav")
 original_sample_rate, original_sound = audio_processing.load_wav("sound/F#2 (Studio).wav")
 
 if original_sample_rate != challenger_sample_rate:
